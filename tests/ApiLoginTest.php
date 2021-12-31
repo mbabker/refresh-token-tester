@@ -12,14 +12,10 @@ final class ApiLoginTest extends WebTestCase
     {
         $client = self::createClient();
 
-        $client->request(
+        $client->jsonRequest(
             method: 'POST',
             uri: '/api/login',
-            server: [
-                'CONTENT_TYPE' => 'application/json',
-                'HTTP_ACCEPT' => 'application/json',
-            ],
-            content: json_encode(['username' => 'user1', 'password' => 'password'], \JSON_THROW_ON_ERROR)
+            parameters: ['username' => 'user1', 'password' => 'password'],
         );
 
         $this->assertResponseIsSuccessful('Could not authenticate to the API.');
@@ -35,14 +31,10 @@ final class ApiLoginTest extends WebTestCase
         $this->assertArrayHasKey('token', $data, 'JWT token is not in the response');
         $this->assertArrayHasKey('refresh_token', $data, 'Refresh token is not in the response');
 
-        $client->request(
+        $client->jsonRequest(
             method: 'POST',
             uri: '/api/token/refresh',
-            server: [
-                'CONTENT_TYPE' => 'application/json',
-                'HTTP_ACCEPT' => 'application/json',
-            ],
-            content: json_encode(['refresh_token' => $data['refresh_token']], \JSON_THROW_ON_ERROR)
+            parameters: ['refresh_token' => $data['refresh_token']],
         );
 
         $this->assertResponseIsSuccessful('Could not refresh the API token.');
